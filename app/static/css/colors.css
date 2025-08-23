@@ -1,0 +1,67 @@
+/* colors.css - Root Variable Definitions */
+:root {
+    /* Primary Colors (Red Palette) */
+    --primary: #d01b20;       /* .color1 */
+    --primary-dark: #9f1518;  /* .color7 */
+    --primary-light: #d32027; /* .color15 */
+    
+    /* Secondary Colors (Brown Palette) */
+    --secondary: #6c211d;     /* .color10 */
+    --secondary-dark: #41251a; /* .color11 */
+    --secondary-light: #5e2d25; /* .color12 */
+    
+    /* Neutral Colors */
+    --light: #ffffff;         /* .color9 */
+    --dark: #29241a;          /* .color13 */
+    --medium: #918577;        /* .color17 */
+    
+    /* Accent Colors */
+    --accent1: #b7181c;       /* .color4 */
+    --accent2: #47281d;       /* .color14 */
+    --accent3: #372f24;       /* .color16 */
+    
+    /* Text Colors */
+    --text: #333;
+    --text-light: #555;
+    
+    /* Backgrounds */
+    --bg: #f9f9f9;
+    --card-bg: #ffffff;
+    
+    /* Decorative */
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    --radius: 8px;
+    --transition: all 0.3s ease;
+}
+
+/* Color Utility Classes */
+.color1 { color: var(--primary); }
+.color2 { color: #c81a1f; }
+.color3 { color: #c0191e; }
+.color4 { color: var(--accent1); }
+.color5 { color: #af171b; }
+.color6 { color: #a71619; }
+.color7 { color: var(--primary-dark); }
+.color8 { color: #a7161a; }
+.color9 { color: var(--light); }
+.color10 { color: var(--secondary); }
+.color11 { color: var(--secondary-dark); }
+.color12 { color: var(--secondary-light); }
+.color13 { color: var(--dark); }
+.color14 { color: var(--accent2); }
+.color15 { color: var(--primary-light); }
+.color16 { color: var(--accent3); }
+.color17 { color: var(--medium); }
+.color18 { color: #3b2619; }
+.color19 { color: #7f7360; }
+.color20 { color: #b2a696; }
+.color21 { color: #a49885; }
+.color22 { color: #4f372a; }
+
+/* Background Utilities */
+.color1-bg { background-color: var(--primary); }
+.color10-bg { background-color: var(--secondary); }
+.color11-bg { background-color: var(--secondary-dark); }
+.color14-bg { background-color: var(--accent2); }
+.color15-bg { background-color: var(--primary-light); }
+.color9-bg { background-color: var(--light); }

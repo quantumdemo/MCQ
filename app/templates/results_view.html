@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    /* Results Container */
+    .results-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 1.5rem;
+    }
+
+    /* Header */
+    .results-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .results-header h1 {
+        font-size: 2.2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .results-header h3 {
+        font-size: 1.3rem;
+        font-weight: normal;
+    }
+
+    /* Score Card */
+    .score-card {
+        background: var(--card-bg);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 2rem;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .score-card h2 {
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+    }
+
+    .score-display {
+        font-size: 3.5rem;
+        font-weight: 700;
+        line-height: 1;
+        margin: 1rem 0;
+    }
+
+    .score-display.passed {
+        color: var(--primary);
+    }
+
+    .score-display.failed {
+        color: var(--primary-dark);
+    }
+
+    .passing-score {
+        font-size: 1.1rem;
+    }
+
+    /* Divider */
+    .divider {
+        height: 1px;
+        background-color: #eee;
+        margin: 2rem 0;
+    }
+
+    /* Review Title */
+    .review-title {
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    /* Question Cards */
+    .questions-review {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .question-card {
+        background: var(--card-bg);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+    }
+
+    .question-header {
+        padding: 1rem 1.5rem;
+        font-size: 1.1rem;
+    }
+
+    /* Options List */
+    .options-list {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .option-item {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .option-item.correct {
+        background-color: rgba(76, 175, 80, 0.1);
+    }
+
+    .option-item.incorrect {
+        background-color: rgba(208, 27, 32, 0.1);
+    }
+
+    .option-text {
+        flex-grow: 1;
+    }
+
+    .answer-badge {
+        padding: 0.25rem 0.5rem;
+        border-radius: var(--radius);
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-left: 1rem;
+    }
+
+    .correct-badge {
+        background-color: var(--primary);
+        color: white;
+    }
+
+    .incorrect-badge {
+        background-color: var(--primary-dark);
+        color: white;
+    }
+
+    /* Explanation */
+    .explanation {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid #eee;
+    }
+
+    /* Actions */
+    .actions {
+        text-align: center;
+        margin-top: 2rem;
+    }
+
+    .action-button {
+        display: inline-block;
+        padding: 0.8rem 2rem;
+        border-radius: var(--radius);
+        font-weight: 600;
+        text-decoration: none;
+        transition: var(--transition);
+    }
+
+    .action-button:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .results-container {
+            padding: 1rem;
+        }
+        
+        .results-header h1 {
+            font-size: 1.8rem;
+        }
+        
+        .results-header h3 {
+            font-size: 1.1rem;
+        }
+        
+        .score-card {
+            padding: 1.5rem;
+        }
+        
+        .score-display {
+            font-size: 2.5rem;
+        }
+        
+        .question-header {
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+        }
+        
+        .option-item {
+            padding: 0.75rem 1rem;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .answer-badge {
+            margin-left: 0;
+            margin-top: 0.5rem;
+            align-self: flex-end;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .score-display {
+            font-size: 2rem;
+        }
+        
+        .action-button {
+            width: 100%;
+            text-align: center;
+        }
+    }
+</style>
+<section class="results-container">
+    <div class="results-header">
+        <h1 class="color1">Exam Results</h1>
+        <h3 class="color13">"{{ result.exam.title }}"</h3>
+    </div>
+
+    <div class="score-card">
+        <h2 class="color13">Your Score</h2>
+        <div class="score-display {% if result.score >= result.exam.passing_score %}passed{% else %}failed{% endif %}">
+            {{ "%.2f"|format(result.score) }}%
+        </div>
+        <p class="passing-score color13">Passing Score: {{ result.exam.passing_score }}%</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <h2 class="review-title color1">Question Review</h2>
+
+    <div class="questions-review">
+        {% for question in result.exam.questions %}
+        <div class="question-card">
+            <div class="question-header color10-bg color9">
+                <strong>Question {{ loop.index }}:</strong> {{ question.question_text|safe }}
+            </div>
+            
+            <div class="options-list">
+                {% for option in question.options %}
+                    {% set student_answer_id = student_answers_map.get(question.id) %}
+                    {% set is_correct = option.is_correct %}
+                    {% set is_student_answer = (student_answer_id == option.id) %}
+
+                    <div class="option-item 
+                        {% if is_correct %}correct{% endif %}
+                        {% if is_student_answer and not is_correct %}incorrect{% endif %}">
+                        
+                        <span class="option-text">{{ option.option_text }}</span>
+                        
+                        {% if is_student_answer and not is_correct %}
+                            <span class="answer-badge incorrect-badge">Your Answer</span>
+                        {% elif is_correct %}
+                            <span class="answer-badge correct-badge">Correct Answer</span>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+            
+            {% if question.explanation %}
+            <div class="explanation color13-bg color9">
+                <strong>Explanation:</strong> {{ question.explanation|safe }}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="actions">
+        <a href="{{ url_for('main.dashboard') }}" class="action-button color1-bg color9">Back to Dashboard</a>
+    </div>
+</section>
+{% endblock content %}

@@ -1,0 +1,378 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    /* Question Form Container */
+    .question-form-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 1.5rem;
+    }
+
+    .question-card {
+        background: var(--card-bg);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 1.5rem;
+    }
+
+    /* Form Elements */
+    .form-title {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--primary);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        font-size: 0.95rem;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-input, .form-select {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 1px solid #ddd;
+        border-radius: var(--radius);
+        font-size: 1rem;
+        transition: var(--transition);
+        background-color: var(--light);
+    }
+
+    .form-input:focus, .form-select:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 2px rgba(208, 27, 32, 0.2);
+    }
+
+    /* CKEditor Styling */
+    .cke_chrome {
+        border-radius: var(--radius) !important;
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+    }
+
+    .cke_top {
+        border-bottom: 1px solid #ddd !important;
+        background: var(--bg) !important;
+        border-radius: var(--radius) var(--radius) 0 0 !important;
+    }
+
+    .cke_bottom {
+        border-top: 1px solid #ddd !important;
+        background: var(--bg) !important;
+        border-radius: 0 0 var(--radius) var(--radius) !important;
+    }
+
+    /* Options Section */
+    .options-title {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #eee;
+    }
+
+    #options-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .option-row {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+    }
+
+    .option-input {
+        flex-grow: 1;
+    }
+
+    .option-checkbox {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+    }
+
+    .form-checkbox {
+        width: 1.1rem;
+        height: 1.1rem;
+        accent-color: var(--primary);
+    }
+
+    .remove-option-btn {
+        width: 2rem;
+        height: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .remove-option-btn:hover {
+        background-color: var(--primary-dark);
+        transform: scale(1.1);
+    }
+
+    .add-option-btn {
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius);
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .add-option-btn:hover {
+        background-color: var(--primary);
+        transform: translateY(-2px);
+    }
+
+    /* Form Note */
+    .form-note {
+        display: block;
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    /* Form Layout */
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Form Actions */
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .submit-button, .cancel-button {
+        padding: 0.8rem 1.5rem;
+        border-radius: var(--radius);
+        font-weight: 600;
+        text-decoration: none;
+        transition: var(--transition);
+        border: none;
+        cursor: pointer;
+        text-align: center;
+    }
+
+    .submit-button:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+
+    .cancel-button:hover {
+        background-color: var(--secondary-dark);
+        transform: translateY(-2px);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .question-form-container {
+            padding: 1rem;
+        }
+        
+        .form-row {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        
+        .option-row {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.5rem;
+        }
+        
+        .option-checkbox {
+            order: 2;
+        }
+        
+        .remove-option-btn {
+            order: 3;
+            align-self: flex-end;
+        }
+        
+        .form-actions {
+            flex-direction: column;
+        }
+        
+        .submit-button, .cancel-button {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .question-card {
+            padding: 1rem;
+        }
+        
+        .form-title {
+            font-size: 1.3rem;
+        }
+        
+        .form-input, .form-select {
+            padding: 0.7rem;
+        }
+        
+        .options-title {
+            font-size: 1.1rem;
+        }
+    }
+</style>
+<section class="question-form-container">
+    <div class="question-card">
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            
+            <h2 class="form-title color1">{{ legend }}</h2>
+            
+            <div class="form-group">
+                {{ form.question_text.label(class="form-label color13") }}
+                <div id="question-text-editor"></div>
+                <textarea id="question_text" name="question_text" style="display:none;"></textarea>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    {{ form.subject.label(class="form-label color13") }}
+                    {{ form.subject(class="form-select") }}
+                </div>
+                <div class="form-group">
+                    {{ form.topic.label(class="form-label color13") }}
+                    {{ form.topic(class="form-select") }}
+                </div>
+            </div>
+            
+            <div class="form-group">
+                {{ form.difficulty.label(class="form-label color13") }}
+                {{ form.difficulty(class="form-select") }}
+            </div>
+            
+            <div class="form-group">
+                <h3 class="options-title color13">Options</h3>
+                <div id="options-container">
+                    {% for option_form in form.options %}
+                    <div class="option-row">
+                        <div class="option-input">
+                            {{ option_form.option_text(class="form-input", placeholder="Option text") }}
+                        </div>
+                        <div class="option-checkbox">
+                            {{ option_form.is_correct(class="form-checkbox") }}
+                            {{ option_form.is_correct.label(class="form-checkbox-label") }}
+                        </div>
+                        <button type="button" class="remove-option-btn color1-bg color9">&times;</button>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button type="button" id="add-option-btn" class="add-option-btn color15-bg color9">Add Option</button>
+            </div>
+            
+            <div class="form-group">
+                {{ form.explanation.label(class="form-label color13") }}
+                <div id="explanation-editor"></div>
+                <textarea id="explanation" name="explanation" style="display:none;"></textarea>
+                <small class="form-note color13">Optional: Provide an explanation for the correct answer.</small>
+            </div>
+            
+            <div class="form-actions">
+                {{ form.submit(class="submit-button color1-bg color9") }}
+                <a href="{{ url_for('admin.list_questions') }}" class="cancel-button color13-bg color9">Cancel</a>
+            </div>
+        </form>
+    </div>
+</section>
+
+<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize CKEditor
+        const questionEditor = CKEDITOR.replace('question-text-editor');
+        const explanationEditor = CKEDITOR.replace('explanation-editor');
+        
+        // Sync editor content with hidden textareas
+        questionEditor.on('change', function() {
+            document.getElementById('question_text').value = questionEditor.getData();
+        });
+        
+        explanationEditor.on('change', function() {
+            document.getElementById('explanation').value = explanationEditor.getData();
+        });
+        
+        // Set initial content if editing existing question
+        const questionText = document.getElementById('question_text').value;
+        const explanationText = document.getElementById('explanation').value;
+        if (questionText) questionEditor.setData(questionText);
+        if (explanationText) explanationEditor.setData(explanationText);
+
+        // Option management
+        const addBtn = document.getElementById('add-option-btn');
+        const container = document.getElementById('options-container');
+        const minOptions = 2;
+        const maxOptions = 5;
+
+        function updateRemoveButtons() {
+            const rows = container.querySelectorAll('.option-row');
+            if (rows.length <= minOptions) {
+                rows.forEach(row => {
+                    const removeBtn = row.querySelector('.remove-option-btn');
+                    if (removeBtn) removeBtn.style.display = 'none';
+                });
+            } else {
+                rows.forEach(row => {
+                    const removeBtn = row.querySelector('.remove-option-btn');
+                    if (removeBtn) removeBtn.style.display = 'flex';
+                });
+            }
+            addBtn.style.display = rows.length >= maxOptions ? 'none' : 'block';
+        }
+
+        addBtn.addEventListener('click', function () {
+            const rows = container.querySelectorAll('.option-row');
+            if (rows.length >= maxOptions) return;
+
+            const newRow = rows[0].cloneNode(true);
+            const newIndex = rows.length;
+
+            newRow.querySelectorAll('input, label').forEach(el => {
+                if (el.name) el.name = el.name.replace('-0-', `-${newIndex}-`);
+                if (el.id) el.id = el.id.replace('-0-', `-${newIndex}-`);
+                if (el.htmlFor) el.htmlFor = el.htmlFor.replace('-0-', `-${newIndex}-`);
+
+                if (el.type === 'text') el.value = '';
+                if (el.type === 'checkbox') el.checked = false;
+            });
+            container.appendChild(newRow);
+            updateRemoveButtons();
+        });
+
+        container.addEventListener('click', function (e) {
+            if (e.target && e.target.classList.contains('remove-option-btn')) {
+                const rows = container.querySelectorAll('.option-row');
+                if (rows.length > minOptions) {
+                    e.target.closest('.option-row').remove();
+                    updateRemoveButtons();
+                }
+            }
+        });
+
+        // Initial check
+        updateRemoveButtons();
+    });
+</script>
+{% endblock content %}

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Bank | MCQ Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/colors.css') }}">
+    <style>
+        /* Base Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: var(--bg);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        h1 {
+            color: var(--dark);
+            margin-bottom: 1rem;
+            font-size: 1.75rem;
+        }
+
+        /* Header Section */
+        .page-header {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        @media (min-width: 768px) {
+            .page-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        /* Card Styles */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Filter Form */
+        .filter-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .form-group {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            border: 1px solid rgba(0,0,0,0.15);
+            border-radius: var(--radius);
+            background-color: var(--light);
+            color: var(--text);
+            transition: var(--transition);
+        }
+
+        .form-select:focus {
+            border-color: var(--primary);
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(208, 27, 32, 0.1);
+        }
+
+        /* Button Styles */
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            border-radius: var(--radius);
+            transition: var(--transition);
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--light);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: var(--light);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--secondary-dark);
+        }
+
+        .btn-info {
+            background-color: #17a2b8;
+            color: var(--light);
+        }
+
+        .btn-info:hover {
+            background-color: #138496;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--medium);
+            color: var(--text);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(0,0,0,0.05);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Table Styles */
+        .question-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .question-table th {
+            background-color: var(--primary);
+            color: var(--light);
+            text-align: left;
+            padding: 1rem;
+            font-weight: 600;
+        }
+
+        .question-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .question-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .question-table tr:hover {
+            background-color: rgba(0,0,0,0.02);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-light);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .question-table {
+                display: block;
+            }
+
+            .question-table thead {
+                display: none;
+            }
+
+            .question-table tbody, .question-table tr, .question-table td {
+                display: block;
+                width: 100%;
+            }
+
+            .question-table tr {
+                margin-bottom: 1rem;
+                border: 1px solid rgba(0,0,0,0.1);
+                border-radius: var(--radius);
+            }
+
+            .question-table td {
+                padding: 0.75rem;
+                position: relative;
+                padding-left: 40%;
+                border-bottom: 1px solid rgba(0,0,0,0.05);
+            }
+
+            .question-table td:before {
+                content: attr(data-label);
+                position: absolute;
+                left: 1rem;
+                top: 0.75rem;
+                width: 35%;
+                font-weight: 600;
+                color: var(--dark);
+            }
+
+            .question-table td:last-child {
+                border-bottom: none;
+            }
+
+            .action-buttons {
+                justify-content: flex-end;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            .filter-form {
+                grid-template-columns: 1fr;
+            }
+
+            .question-table td {
+                padding-left: 35%;
+            }
+
+            .question-table td:before {
+                width: 30%;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+
+            .btn-sm {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% extends "base.html" %}
+
+    {% block content %}
+    <div class="container">
+        <div class="page-header">
+            <h1>Question Bank</h1>
+            <div class="header-actions">
+                <a href="{{ url_for('admin.import_questions') }}" class="btn btn-secondary">Bulk Import</a>
+                <a href="{{ url_for('admin.create_question') }}" class="btn btn-primary">Add New Question</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form method="GET" action="{{ url_for('admin.list_questions') }}" class="filter-form">
+                    <div class="form-group">
+                        <label for="subject" class="form-label">Subject</label>
+                        <select name="subject" id="subject" class="form-select">
+                            <option value="all">All Subjects</option>
+                            {% for subject in subjects %}
+                                <option value="{{ subject }}" {% if subject == selected_subject %}selected{% endif %}>{{ subject }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="topic" class="form-label">Topic</label>
+                        <select name="topic" id="topic" class="form-select">
+                            <option value="all">All Topics</option>
+                            {% for topic in topics %}
+                                <option value="{{ topic }}" {% if topic == selected_topic %}selected{% endif %}>{{ topic }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group btn-group">
+                        <button type="submit" class="btn btn-info">Filter</button>
+                        <a href="{{ url_for('admin.list_questions') }}" class="btn btn-outline">Clear</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                {% if questions %}
+                <table class="question-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Question Text</th>
+                            <th>Subject</th>
+                            <th>Topic</th>
+                            <th>Difficulty</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for question in questions %}
+                        <tr>
+                            <td data-label="#">{{ loop.index }}</td>
+                            <td data-label="Question">{{ question.question_text[:80] }}{% if question.question_text|length > 80 %}...{% endif %}</td>
+                            <td data-label="Subject">{{ question.subject }}</td>
+                            <td data-label="Topic">{{ question.topic }}</td>
+                            <td data-label="Difficulty">{{ question.difficulty }}</td>
+                            <td data-label="Actions">
+                                <div class="action-buttons">
+                                    <a href="{{ url_for('admin.edit_question', question_id=question.id) }}" class="btn btn-secondary btn-sm">Edit</a>
+                                    <form action="{{ url_for('admin.delete_question', question_id=question.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this question?');">
+                                        <input type="submit" value="Delete" class="btn btn-danger btn-sm">
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="empty-state">
+                    <p>No questions found in the bank.</p>
+                    <p>You can start by adding a new question.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+</body>
+</html>

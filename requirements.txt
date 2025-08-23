@@ -1,0 +1,12 @@
+Flask
+Flask-SQLAlchemy
+Flask-Migrate
+python-dotenv
+Flask-Bcrypt
+Flask-Login
+Flask-WTF
+email-validator
+pytest
+pytest-flask
+fpdf2
+Flask-Mail

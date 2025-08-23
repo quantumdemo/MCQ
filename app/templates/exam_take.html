@@ -1,0 +1,504 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    /* Exam Container */
+    .exam-container {
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 1.5rem;
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    /* Main Exam Area */
+    .exam-card {
+        background: var(--card-bg);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+    }
+
+    .exam-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        border-bottom: 1px solid #eee;
+    }
+
+    .exam-timer, .exam-practice-mode {
+        font-weight: 600;
+        font-size: 1.2rem;
+    }
+
+    .exam-body {
+        padding: 1.5rem;
+    }
+
+    #question-text {
+        margin-bottom: 1.5rem;
+        line-height: 1.5;
+    }
+
+    /* Options Styling */
+    .options-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .option-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border-radius: var(--radius);
+        border: 1px solid #ddd;
+        transition: var(--transition);
+        cursor: pointer;
+    }
+
+    .option-item:hover {
+        border-color: var(--primary);
+    }
+
+    .option-item input[type="radio"] {
+        margin-right: 1rem;
+        accent-color: var(--primary);
+    }
+
+    .option-item label {
+        cursor: pointer;
+        flex-grow: 1;
+    }
+
+    .correct-option {
+        background-color: rgba(76, 175, 80, 0.1);
+        border-color: #4CAF50;
+    }
+
+    .incorrect-option {
+        background-color: rgba(208, 27, 32, 0.1);
+        border-color: var(--primary);
+    }
+
+    .explanation-box {
+        padding: 1rem;
+        margin-top: 1.5rem;
+        border-radius: var(--radius);
+        background-color: rgba(66, 165, 245, 0.1);
+        border-left: 4px solid var(--primary);
+    }
+
+    /* Footer Navigation */
+    .exam-footer {
+        display: flex;
+        justify-content: space-between;
+        padding: 1rem 1.5rem;
+        border-top: 1px solid #eee;
+    }
+
+    .nav-button, .action-button {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: var(--radius);
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .nav-button:hover, .action-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .nav-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    /* Question Palette */
+    .palette-card {
+        background: var(--card-bg);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 1.5rem;
+    }
+
+    .palette-title {
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    .palette-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 0.5rem;
+    }
+
+    .palette-btn {
+        width: 100%;
+        aspect-ratio: 1;
+        border-radius: var(--radius);
+        border: 1px solid #ddd;
+        background: var(--light);
+        cursor: pointer;
+        transition: var(--transition);
+        font-weight: 600;
+    }
+
+    .palette-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .palette-btn.active {
+        border: 2px solid var(--primary);
+        transform: scale(1.05);
+    }
+
+    .palette-btn.answered {
+        background-color: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+
+    .palette-btn.unanswered {
+        background-color: var(--light);
+        color: var(--text);
+    }
+
+    .palette-btn.marked {
+        background-color: var(--accent2);
+        color: white;
+    }
+
+    .submit-button {
+        width: 100%;
+        padding: 0.75rem;
+        margin-top: 1.5rem;
+        border: none;
+        border-radius: var(--radius);
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .submit-button:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .exam-container {
+            grid-template-columns: 1fr;
+        }
+        
+        .exam-footer {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .nav-button, .action-button {
+            width: 100%;
+        }
+    }
+
+    .empty-exam {
+        text-align: center;
+        padding: 2rem;
+        font-size: 1.2rem;
+    }
+</style>
+<div class="exam-container">
+    <!-- Main Exam Area -->
+    <div class="exam-main">
+        <div class="exam-card">
+            <div class="exam-header">
+                <h2 id="exam-title" class="color1"></h2>
+                {% if not is_practice_mode %}
+                <div id="timer" class="exam-timer color1">--:--</div>
+                {% else %}
+                <div class="exam-practice-mode color15">Practice Mode</div>
+                {% endif %}
+            </div>
+            
+            <div class="exam-body">
+                <div id="question-area">
+                    <h3 id="question-text" class="color13"></h3>
+                    <div id="options-area" class="options-container"></div>
+                    <div id="explanation-area" class="explanation-box" style="display: none;"></div>
+                </div>
+            </div>
+            
+            <div class="exam-footer">
+                <button id="prev-btn" class="nav-button color10-bg color9">Previous</button>
+                {% if not is_practice_mode %}
+                <button id="mark-review-btn" class="action-button color14-bg color9">Mark for Review</button>
+                {% else %}
+                <button id="check-answer-btn" class="action-button color15-bg color9">Check Answer</button>
+                {% endif %}
+                <button id="next-btn" class="nav-button color1-bg color9">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Question Palette -->
+    <div class="exam-palette">
+        <div class="palette-card">
+            <h3 class="palette-title color1">Question Palette</h3>
+            <div id="question-palette" class="palette-grid">
+                <!-- Buttons will be injected by JS -->
+            </div>
+            {% if not is_practice_mode %}
+            <button id="submit-exam-btn" class="submit-button color1-bg color9">Submit Exam</button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    // Constants and State
+    const exam = JSON.parse('{{ exam_json|safe }}');
+    const questions = JSON.parse('{{ questions_json|safe }}');
+    const isPracticeMode = {{ is_practice_mode|default(false)|tojson }};
+    const examId = exam.id;
+    const examDuration = exam.time_limit * 60; // in seconds
+    let currentQuestionIndex = 0;
+
+    // In practice mode, always start with a clean slate.
+    if (isPracticeMode) {
+        localStorage.removeItem(`exam_${examId}_answers`);
+        localStorage.removeItem(`exam_${examId}_marked`);
+        localStorage.removeItem(`exam_${examId}_time`);
+    }
+
+    // Load state from localStorage or initialize
+    let userAnswers = JSON.parse(localStorage.getItem(`exam_${examId}_answers`)) || {};
+    let markedForReview = JSON.parse(localStorage.getItem(`exam_${examId}_marked`)) || [];
+    let timeRemaining = localStorage.getItem(`exam_${examId}_time`) || examDuration;
+
+    // DOM Elements
+    const questionTextEl = document.getElementById('question-text');
+    const optionsAreaEl = document.getElementById('options-area');
+    const paletteEl = document.getElementById('question-palette');
+    const nextBtn = document.getElementById('next-btn');
+    const prevBtn = document.getElementById('prev-btn');
+    const markReviewBtn = document.getElementById('mark-review-btn');
+    const timerEl = document.getElementById('timer');
+
+    function saveState() {
+        localStorage.setItem(`exam_${examId}_answers`, JSON.stringify(userAnswers));
+        localStorage.setItem(`exam_${examId}_marked`, JSON.stringify(markedForReview));
+    }
+
+    function renderQuestion(index) {
+        currentQuestionIndex = index;
+        const question = questions[index];
+
+        if (isPracticeMode) {
+            document.getElementById('explanation-area').style.display = 'none';
+            document.getElementById('check-answer-btn').disabled = false;
+        }
+
+        // Render question text
+        questionTextEl.innerHTML = `${index + 1}. ${question.text}`;
+
+        // Render options
+        optionsAreaEl.innerHTML = '';
+        question.options.forEach(opt => {
+            const optionId = `q${question.id}_opt${opt.id}`;
+            const isChecked = userAnswers[question.id] === opt.id;
+
+            const optionDiv = document.createElement('div');
+            optionDiv.className = 'option-item';
+            optionDiv.innerHTML = `
+                <input type="radio" name="q${question.id}_options" id="${optionId}" value="${opt.id}" ${isChecked ? 'checked' : ''}>
+                <label for="${optionId}">${opt.text}</label>
+            `;
+            optionsAreaEl.appendChild(optionDiv);
+        });
+
+        updateNavButtons();
+        updatePalette();
+    }
+
+    function updateNavButtons() {
+        prevBtn.disabled = currentQuestionIndex === 0;
+        nextBtn.disabled = currentQuestionIndex === questions.length - 1;
+    }
+
+    function updatePalette() {
+        paletteEl.innerHTML = '';
+        questions.forEach((q, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'palette-btn';
+            btn.textContent = index + 1;
+
+            if (userAnswers[q.id]) {
+                btn.classList.add('answered'); // Answered
+            } else {
+                btn.classList.add('unanswered'); // Not answered
+            }
+
+            if (markedForReview.includes(q.id)) {
+                btn.classList.add('marked'); // Marked for review
+            }
+
+            if (index === currentQuestionIndex) {
+                btn.classList.add('active');
+            }
+
+            btn.addEventListener('click', () => renderQuestion(index));
+            paletteEl.appendChild(btn);
+        });
+    }
+
+    // Event Listeners
+    nextBtn.addEventListener('click', () => {
+        if (currentQuestionIndex < questions.length - 1) {
+            renderQuestion(currentQuestionIndex + 1);
+        }
+    });
+
+    prevBtn.addEventListener('click', () => {
+        if (currentQuestionIndex > 0) {
+            renderQuestion(currentQuestionIndex - 1);
+        }
+    });
+
+    optionsAreaEl.addEventListener('change', (e) => {
+        if (e.target.type === 'radio') {
+            const questionId = questions[currentQuestionIndex].id;
+            const optionId = parseInt(e.target.value, 10);
+            userAnswers[questionId] = optionId;
+            saveState();
+            updatePalette();
+        }
+    });
+
+    function startTimer() {
+        const timer = setInterval(() => {
+            timeRemaining--;
+            localStorage.setItem(`exam_${examId}_time`, timeRemaining);
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            timerEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+            if (timeRemaining <= 0) {
+                clearInterval(timer);
+                timerEl.textContent = "Time's Up!";
+                alert('Time is up! Your exam will be submitted automatically.');
+                submitExam();
+            }
+        }, 1000);
+    }
+
+    function submitExam() {
+        if (confirm('Are you sure you want to submit your exam?')) {
+            fetch(`/exam/${examId}/submit`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userAnswers),
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                // Clean up local storage
+                localStorage.removeItem(`exam_${examId}_answers`);
+                localStorage.removeItem(`exam_${examId}_marked`);
+                localStorage.removeItem(`exam_${examId}_time`);
+                // Redirect to results/dashboard
+                window.location.href = data.redirect_url;
+            })
+            .catch(error => {
+                console.error('Error submitting exam:', error);
+                alert('An error occurred while submitting your exam. Please try again.');
+            });
+        }
+    }
+
+    // Event Listener for submit button
+    document.getElementById('submit-exam-btn')?.addEventListener('click', submitExam);
+
+    // Initial Load
+    document.addEventListener('DOMContentLoaded', () => {
+        document.title = exam.title;
+        document.getElementById('exam-title').textContent = exam.title;
+        
+        if (questions.length > 0) {
+            renderQuestion(0);
+            if (!isPracticeMode) {
+                startTimer();
+                setupAntiCheating();
+            }
+        } else {
+            // Handle case where there are no questions
+            document.getElementById('question-area').innerHTML = '<div class="empty-exam color1">This exam has no questions.</div>';
+            document.getElementById('prev-btn').style.display = 'none';
+            document.getElementById('next-btn').style.display = 'none';
+            document.getElementById('mark-review-btn').style.display = 'none';
+            document.getElementById('submit-exam-btn').style.display = 'none';
+        }
+    });
+
+    function setupAntiCheating() {
+        let leaveCount = 0;
+        document.addEventListener('visibilitychange', function () {
+            if (document.visibilityState === 'hidden') {
+                leaveCount++;
+                console.log(`User left the page. Count: ${leaveCount}`);
+                alert(`Warning: Leaving the exam tab is not allowed. This is warning #${leaveCount}.`);
+                // Future enhancement: could send a ping to the server here.
+            }
+        });
+    }
+
+    if (isPracticeMode) {
+        const checkAnswerBtn = document.getElementById('check-answer-btn');
+        const explanationArea = document.getElementById('explanation-area');
+
+        checkAnswerBtn.addEventListener('click', () => {
+            const question = questions[currentQuestionIndex];
+            const selectedOptionId = userAnswers[question.id];
+
+            if (selectedOptionId === undefined) {
+                alert('Please select an answer first.');
+                return;
+            }
+
+            question.options.forEach(opt => {
+                const optEl = document.getElementById(`q${question.id}_opt${opt.id}`).parentElement;
+                if (opt.is_correct) {
+                    optEl.classList.add('correct-option');
+                } else if (opt.id === selectedOptionId) {
+                    optEl.classList.add('incorrect-option');
+                }
+            });
+
+            if (question.explanation) {
+                explanationArea.innerHTML = `<strong>Explanation:</strong> ${question.explanation}`;
+                explanationArea.style.display = 'block';
+            }
+
+            // Disable further answers for this question
+            optionsAreaEl.querySelectorAll('input[type="radio"]').forEach(radio => radio.disabled = true);
+            checkAnswerBtn.disabled = true;
+        });
+    } else if (markReviewBtn) {
+        markReviewBtn.addEventListener('click', () => {
+            const questionId = questions[currentQuestionIndex].id;
+            const indexInMarked = markedForReview.indexOf(questionId);
+            if (indexInMarked > -1) {
+                markedForReview.splice(indexInMarked, 1); // Unmark
+            } else {
+                markedForReview.push(questionId); // Mark
+            }
+            saveState();
+            updatePalette();
+        });
+    }
+</script>
+{% endblock content %}

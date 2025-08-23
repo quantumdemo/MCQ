@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    /* Auth Styles */
+    .auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+        padding: 2rem;
+        background-color: var(--bg);
+    }
+
+    .auth-card {
+        background: var(--card-bg);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 2.5rem;
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .auth-title {
+        color: var(--primary);
+        text-align: center;
+        margin-bottom: 2rem;
+        font-size: 1.8rem;
+    }
+
+    .auth-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text);
+        font-size: 0.95rem;
+    }
+
+    .form-input {
+        padding: 0.8rem 1rem;
+        border: 1px solid #ddd;
+        border-radius: var(--radius);
+        font-size: 1rem;
+        transition: var(--transition);
+        background-color: var(--light);
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 2px rgba(208, 27, 32, 0.2);
+    }
+
+    .form-input-error {
+        border-color: var(--primary);
+    }
+
+    .form-error {
+        color: var(--primary);
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+    }
+
+    .form-checkbox {
+        display: flex;
+        align-items: center;
+        margin: 0.5rem 0;
+    }
+
+    .form-checkbox label {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        position: relative;
+        padding-left: 2rem;
+        color: var(--text-light);
+    }
+
+    .form-checkbox input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+    }
+
+    .checkmark {
+        position: absolute;
+        left: 0;
+        height: 1.2rem;
+        width: 1.2rem;
+        background-color: var(--light);
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        transition: var(--transition);
+    }
+
+    .form-checkbox input:checked ~ .checkmark {
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+        left: 0.4rem;
+        top: 0.1rem;
+        width: 0.3rem;
+        height: 0.7rem;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+
+    .form-checkbox input:checked ~ .checkmark:after {
+        display: block;
+    }
+
+    .auth-button {
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        padding: 0.9rem;
+        border-radius: var(--radius);
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        width: 100%;
+    }
+
+    .auth-button:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-1px);
+    }
+
+    .auth-footer {
+        margin-top: 1.5rem;
+        text-align: center;
+        color: var(--text-light);
+        font-size: 0.9rem;
+    }
+
+    .auth-link {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .auth-link:hover {
+        text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+        .auth-card {
+            padding: 1.5rem;
+        }
+        
+        .auth-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+    }
+</style>
+    <section class="auth-container">
+        <div class="auth-card">
+            <h2 class="auth-title">Log In</h2>
+            
+            <form method="POST" action="" class="auth-form">
+                {{ form.hidden_tag() }}
+                
+                <div class="form-group">
+                    {{ form.email.label(class="form-label") }}
+                    {{ form.email(class="form-input" + (' form-input-error' if form.email.errors else '')) }}
+                    {% if form.email.errors %}
+                        <div class="form-error">
+                            {% for error in form.email.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    {{ form.password.label(class="form-label") }}
+                    {{ form.password(class="form-input" + (' form-input-error' if form.password.errors else '')) }}
+                    {% if form.password.errors %}
+                        <div class="form-error">
+                            {% for error in form.password.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-checkbox">
+                    <label>
+                        {{ form.remember() }}
+                        <span class="checkmark"></span>
+                        {{ form.remember.label.text }}
+                    </label>
+                </div>
+                
+                <div class="form-submit">
+                    {{ form.submit(class="auth-button") }}
+                </div>
+            </form>
+            
+            <div class="auth-footer">
+                <p>Need An Account? <a href="{{ url_for('main.register') }}" class="auth-link">Sign Up Now</a></p>
+                <p><a href="{{ url_for('main.request_reset') }}" class="auth-link">Forgot Password?</a></p>
+            </div>
+        </div>
+    </section>
+{% endblock content %}

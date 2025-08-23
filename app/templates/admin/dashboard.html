@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | MCQ Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/colors.css') }}">
+    <style>
+        /* Base Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: var(--bg);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .lead {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background-color: rgba(0, 0, 0, 0.1);
+            margin: 2rem 0;
+        }
+
+        /* Card Styles */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .card-title {
+            margin-bottom: 0.75rem;
+            font-size: 1.25rem;
+        }
+
+        .card-text {
+            color: var(--text-light);
+            margin-bottom: 0;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            text-align: center;
+            color: var(--light);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+        }
+
+        .stat-card h2 {
+            font-size: 2.5rem;
+            margin: 0.5rem 0;
+            color: var(--light);
+        }
+
+        /* Settings Card */
+        .settings-card {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 768px) {
+            .settings-card {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        /* List Group */
+        .list-group {
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        .list-group-item {
+            padding: 1rem 1.5rem;
+            background-color: var(--card-bg);
+            border-radius: var(--radius);
+            color: var(--text);
+            text-decoration: none;
+            transition: var(--transition);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .list-group-item:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+            border-color: rgba(0, 0, 0, 0.15);
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.35em 0.65em;
+            font-size: 0.75em;
+            font-weight: 700;
+            line-height: 1;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: 50rem;
+        }
+
+        .bg-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .bg-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            font-weight: 400;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            user-select: none;
+            border: 1px solid transparent;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: var(--radius);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .btn-success {
+            color: var(--light);
+            background-color: var(--primary);
+            border-color: var(--primary-dark);
+        }
+
+        .btn-success:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--secondary);
+        }
+
+        .btn-warning {
+            color: var(--dark);
+            background-color: #ffc107;
+            border-color: #ffc107;
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+            border-color: #d39e00;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .settings-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .settings-card > div {
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% extends "base.html" %}
+
+    {% block content %}
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+        <p class="lead">Welcome, {{ current_user.username }}. From here you can manage the application.</p>
+
+        <div class="stats-grid">
+            <div class="stat-card color1-bg">
+                <div class="card-body">
+                    <h2>{{ stats.user_count }}</h2>
+                    <p class="card-text">Total Users</p>
+                </div>
+            </div>
+            <div class="stat-card color10-bg">
+                <div class="card-body">
+                    <h2>{{ stats.question_count }}</h2>
+                    <p class="card-text">Total Questions</p>
+                </div>
+            </div>
+            <div class="stat-card color14-bg">
+                <div class="card-body">
+                    <h2>{{ stats.exam_count }}</h2>
+                    <p class="card-text">Total Exams</p>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+        <h2>Application Settings</h2>
+        <div class="card settings-card">
+            <div class="card-body">
+                <h5 class="card-title">Practice Mode</h5>
+                <p class="card-text">
+                    Current Status:
+                    {% if is_practice_enabled %}
+                        <span class="badge bg-success">Enabled</span> - Students can access the practice area.
+                    {% else %}
+                        <span class="badge bg-danger">Disabled</span> - Students cannot access the practice area.
+                    {% endif %}
+                </p>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('admin.toggle_practice_mode') }}" method="POST">
+                    {% if is_practice_enabled %}
+                        <button type="submit" class="btn btn-warning">Lock Practice Mode</button>
+                    {% else %}
+                        <button type="submit" class="btn btn-success">Unlock Practice Mode</button>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+
+        <hr>
+        <h2>Management Links</h2>
+        <div class="list-group">
+            <a href="{{ url_for('admin.list_students') }}" class="list-group-item">Manage Students</a>
+            <a href="{{ url_for('admin.list_questions') }}" class="list-group-item">Manage Question Bank</a>
+            <a href="{{ url_for('admin.list_exams') }}" class="list-group-item">Manage Exams</a>
+            <a href="{{ url_for('admin.analytics') }}" class="list-group-item">View Detailed Analytics</a>
+        </div>
+    </div>
+    {% endblock %}
+</body>
+</html>

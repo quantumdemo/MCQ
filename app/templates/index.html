@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+{% block content %}
+    <style>
+     :root {
+          --primary: #d01b20;
+          --primary-dark: #9f1518;
+          --text: #333;
+          --text-light: #555;
+          --bg: #f9f9f9;
+          --card-bg: #fff;
+          --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+          --radius: 8px;
+          --transition: all 0.3s ease;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+       .hero  {
+         margin-top: -10rem;
+         padding: 0;
+         z-index: 2;
+      }
+
+      .hero h1 {
+          font-size: 2.0rem;
+          margin-bottom: 1.5rem;
+          color: var(--primary);
+      }
+
+      .hero .hero-text {
+          font-size: 1.2rem;
+          margin-bottom: 1.5rem;
+          color: var(--text-light);
+          text-align: start;
+      }
+
+         /* Buttons */
+      .btn {
+          display: inline-block;
+          padding: 0.8rem 1.8rem;
+          border-radius: var(--radius);
+          font-weight: 600;
+          text-decoration: none;
+          transition: var(--transition);
+          margin: 0.5rem;
+      }
+
+      .btn-primary {
+          background-color: var(--primary);
+          color: var(--light);
+          border: 2px solid var(--primary);
+      }
+
+      .btn-primary:hover {
+          background-color: var(--primary-dark);
+          border-color: var(--primary-dark);
+      }
+
+      .btn-secondary {
+          background-color: transparent;
+          color: var(--primary);
+          border: 2px solid var(--primary);
+      }
+
+      .btn-secondary:hover {
+          background-color: var(--primary);
+          color: var(--light);
+      }
+
+      /* Hero Section */
+      .about {
+          background: linear-gradient(135deg, var(--bg) 0%, var(--light) 100%);
+          text-align: center;
+          margin-top: 3rem;
+      }
+
+      .about-content {
+          max-width: 1200px;
+          margin: 0 auto;
+      }
+
+      /* Feature Cards */
+      .about-features {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 2rem;
+          margin: 3rem 0;
+      }
+
+      .feature-card {
+          background: var(--card-bg);
+          border-radius: var(--radius);
+          border-top: 3px solid var(--primary);
+          padding: 2rem;
+          width: 100%;
+          max-width: 300px;
+          box-shadow: var(--shadow);
+          transition: var(--transition);
+      }
+
+      .feature-card:hover {
+          transform: translateY(-5px);
+      }
+
+      .feature-icon {
+          font-size: 2.5rem;
+          margin-bottom: 1rem;
+      }
+
+      .feature-card h3 {
+          color: var(--primary);
+          margin-bottom: 0.75rem;
+      }
+
+      .feature-card p {
+          color: var(--text-light);
+      }
+
+      /* Testimonials */
+      .testimonials {
+          padding: 4rem 2rem;
+          background-color: var(--bg);
+          text-align: center;
+      }
+
+      .testimonials h2 {
+          font-size: 2rem;
+          margin-bottom: 3rem;
+          color: var(--primary);
+      }
+
+      .testimonial-cards {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 2rem;
+          max-width: 1200px;
+          margin: 0 auto;
+      }
+
+      .testimonial-card {
+          background: var(--card-bg);
+          border-radius: var(--radius);
+          padding: 2rem;
+          width: 100%;
+          max-width: 400px;
+          box-shadow: var(--shadow);
+          position: relative;
+      }
+
+      .testimonial-card p {
+          font-style: italic;
+          margin-bottom: 1rem;
+          color: var(--text);
+      }
+
+      .testimonial-author {
+          font-weight: 600;
+          color: var(--primary);
+      }
+
+      /* Color-Specific Enhancements */
+      .feature-icon.color1 {
+          color: var(--primary);
+      }
+
+      .feature-icon.color10 {
+          color: var(--secondary);
+      }
+
+      .feature-icon.color15 {
+          color: var(--primary-light);
+      }
+
+      .testimonial-author.color12 {
+          color: var(--secondary-light);
+      }
+
+      .testimonial-author.color22 {
+          color: var(--color22);
+      }
+
+      /* Responsive Adjustments */
+      @media (max-width: 768px) {
+          .hero {
+              margin-top: 2rem;
+          }
+
+          .hero h1 {
+              font-size: 2rem;
+          }
+          
+          .hero-text {
+              font-size: 1.1rem;
+          }
+          
+          .feature-card {
+              max-width: 100%;
+          }
+          
+      }
+    </style>
+
+    <div class="hero">
+           <h1>Welcome to the MCQ Exam Platform</h1>
+          <p class="hero-text">Your one-stop solution for creating, managing, and taking multiple-choice exams.</p>
+          {% if not current_user.is_authenticated %}
+            <div class="hero-actions">
+                <a href="{{ url_for('main.register') }}" class="btn btn-primary">Register Now</a>
+                <a href="{{ url_for('main.login') }}" class="btn btn-secondary">Login</a>
+            </div>
+            {% else %}
+            <div class="hero-actions">
+                <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary">Go to Dashboard</a>
+            </div>
+            {% endif %}
+    </div>
+  
+    
+
+    <section class="about">
+        <div class="about-content">
+            <div class="about-features">
+                <div class="feature-card">
+                    <div class="feature-icon">📝</div>
+                    <h3>Create Exams</h3>
+                    <p>Easily build custom multiple-choice tests with our intuitive interface.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Track Results</h3>
+                    <p>Get detailed analytics on exam performance and student progress.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Secure Platform</h3>
+                    <p>Your data is protected with industry-standard security measures.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="testimonials">
+        <h2>What Our Users Say</h2>
+        <div class="testimonial-cards">
+            <div class="testimonial-card">
+                <p>"This platform revolutionized how we conduct assessments. Highly recommended!"</p>
+                <div class="testimonial-author">- Professor Smith</div>
+            </div>
+            <div class="testimonial-card">
+                <p>"So easy to use, even for non-technical instructors. Saves us hours every week."</p>
+                <div class="testimonial-author">- Dr. Johnson</div>
+            </div>
+        </div>
+    </section>
+{% endblock content %}

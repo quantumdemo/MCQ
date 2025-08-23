@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    /* Auth Container */
+    .auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 2rem;
+    }
+
+    .auth-card {
+        background: var(--card-bg);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 2.5rem;
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .auth-title {
+        margin-bottom: 0.5rem;
+        font-size: 1.8rem;
+        font-weight: 600;
+    }
+
+    .auth-subtitle {
+        margin-bottom: 2rem;
+        font-size: 1rem;
+        color: var(--text-light);
+    }
+
+    /* Form Styles */
+    .auth-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        text-align: left;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .form-input {
+        padding: 0.8rem 1rem;
+        border: 1px solid #ddd;
+        border-radius: var(--radius);
+        font-size: 1rem;
+        transition: var(--transition);
+        background-color: var(--light);
+        width: 100%;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 2px rgba(208, 27, 32, 0.2);
+    }
+
+    .form-input-error {
+        border-color: var(--primary);
+    }
+
+    .form-error {
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+    }
+
+    /* Submit Button */
+    .auth-button {
+        border: none;
+        padding: 0.9rem;
+        border-radius: var(--radius);
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+
+    .auth-button:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-1px);
+    }
+
+    /* Footer */
+    .auth-footer {
+        margin-top: 1.5rem;
+        text-align: center;
+        font-size: 0.9rem;
+    }
+
+    .auth-link {
+        font-weight: 500;
+        text-decoration: none;
+    }
+
+    .auth-link:hover {
+        text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+        .auth-card {
+            padding: 1.5rem;
+        }
+        
+        .auth-title {
+            font-size: 1.5rem;
+        }
+        
+        .auth-subtitle {
+            font-size: 0.9rem;
+        }
+    }
+</style>
+    <section class="auth-container color9-bg">
+        <div class="auth-card">
+            <h2 class="auth-title color1">Reset Password</h2>
+            <p class="auth-subtitle color13">Enter your email address and we will send you a link to reset your password.</p>
+            
+            <form method="POST" action="" class="auth-form">
+                {{ form.hidden_tag() }}
+                
+                <div class="form-group">
+                    {{ form.email.label(class="form-label color13") }}
+                    {{ form.email(class="form-input" + (' form-input-error' if form.email.errors else '')) }}
+                    {% if form.email.errors %}
+                        <div class="form-error color1">
+                            {% for error in form.email.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-submit">
+                    {{ form.submit(class="auth-button color1-bg color9") }}
+                </div>
+            </form>
+            
+            <div class="auth-footer color13">
+                Remember your password? <a href="{{ url_for('main.login') }}" class="auth-link color1">Sign In</a>
+            </div>
+        </div>
+    </section>
+{% endblock content %}

@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    /* Analytics Container */
+    .analytics-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1.5rem;
+    }
+
+    .analytics-title {
+        font-size: 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    /* Analytics Sections */
+    .analytics-section {
+        background: var(--card-bg);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+
+    .section-header {
+        padding: 1rem 1.5rem;
+    }
+
+    .section-header h2 {
+        font-size: 1.3rem;
+        margin: 0;
+    }
+
+    /* Tables */
+    .responsive-table {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+    }
+
+    th {
+        background-color: var(--bg);
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    tr:hover {
+        background-color: rgba(208, 27, 32, 0.05);
+    }
+
+    /* Buttons */
+    .export-btn, .back-btn {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius);
+        font-weight: 600;
+        text-decoration: none;
+        transition: var(--transition);
+        text-align: center;
+        margin: 0.25rem;
+    }
+
+    .export-btn:hover, .back-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .action-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    /* No Data Message */
+    .no-data {
+        padding: 1.5rem;
+        text-align: center;
+        border-radius: 0 0 var(--radius) var(--radius);
+    }
+
+    /* Footer */
+    .analytics-footer {
+        text-align: center;
+        margin-top: 2rem;
+    }
+
+    .back-btn {
+        padding: 0.75rem 1.5rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .analytics-container {
+            padding: 1rem;
+        }
+        
+        table {
+            border: 0;
+        }
+        
+        table thead {
+            display: none;
+        }
+        
+        table tr {
+            display: block;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        table td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        table td::before {
+            content: attr(data-label);
+            font-weight: 600;
+            margin-right: 1rem;
+        }
+        
+        .action-buttons {
+            justify-content: flex-end;
+        }
+        
+        .analytics-title {
+            font-size: 1.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        table td {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .action-buttons {
+            width: 100%;
+            justify-content: space-between;
+        }
+        
+        .export-btn {
+            flex-grow: 1;
+            text-align: center;
+        }
+    } 
+</style>
+<section class="analytics-container">
+    <h1 class="analytics-title color1">Exam Analytics</h1>
+
+    <div class="analytics-section">
+        <div class="section-header color10-bg color9">
+            <h2>Overall Exam Performance</h2>
+        </div>
+        
+        {% if exam_stats %}
+        <div class="responsive-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Exam Title</th>
+                        <th>Attempts</th>
+                        <th>Average Score</th>
+                        <th>Highest Score</th>
+                        <th>Lowest Score</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stat in exam_stats %}
+                    <tr>
+                        <td data-label="Exam Title">{{ stat.title }}</td>
+                        <td data-label="Attempts">{{ stat.attempts }}</td>
+                        <td data-label="Average Score">{{ "%.2f"|format(stat.avg_score or 0) }}%</td>
+                        <td data-label="Highest Score">{{ "%.2f"|format(stat.max_score or 0) }}%</td>
+                        <td data-label="Lowest Score">{{ "%.2f"|format(stat.min_score or 0) }}%</td>
+                        <td data-label="Actions">
+                            <a href="{{ url_for('admin.export_exam_results_csv', exam_id=stat.id) }}" class="export-btn color1-bg color9">Export All (CSV)</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="no-data color13-bg color9">
+            No exam results found to generate aggregate analytics.
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="analytics-section">
+        <div class="section-header color10-bg color9">
+            <h2>Detailed Student Results</h2>
+        </div>
+        
+        {% if all_results %}
+        <div class="responsive-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Exam Title</th>
+                        <th>Student Name</th>
+                        <th>Score</th>
+                        <th>Date Taken</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in all_results %}
+                    <tr>
+                        <td data-label="Exam Title">{{ result.exam.title }}</td>
+                        <td data-label="Student Name">{{ result.student.username }}</td>
+                        <td data-label="Score">{{ "%.2f"|format(result.score) }}%</td>
+                        <td data-label="Date Taken">{{ result.submitted_at.strftime('%Y-%m-%d %H:%M') if result.submitted_at else 'N/A' }}</td>
+                        <td data-label="Actions">
+                            <div class="action-buttons">
+                                <a href="{{ url_for('admin.export_result_csv', result_id=result.id) }}" class="export-btn color1-bg color9">CSV</a>
+                                <a href="{{ url_for('admin.export_result_pdf', result_id=result.id) }}" class="export-btn color15-bg color9">PDF</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="no-data color13-bg color9">
+            No individual student results found.
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="analytics-footer">
+        <a href="{{ url_for('admin.dashboard') }}" class="back-btn color13-bg color9">Back to Dashboard</a>
+    </div>
+</section>
+{% endblock content %}

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Import Questions | MCQ Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/colors.css') }}">
+    <style>
+        /* Base Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: var(--bg);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Card Styles */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .card-title {
+            margin: 0 0 1rem 0;
+            color: var(--dark);
+            font-size: 1.75rem;
+        }
+
+        /* Alert Box */
+        .alert {
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+            border-radius: var(--radius);
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .alert h5 {
+            margin-top: 0;
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .alert hr {
+            border-color: rgba(0,0,0,0.1);
+            margin: 1rem 0;
+        }
+
+        .alert ul {
+            padding-left: 1.25rem;
+            margin-bottom: 0;
+        }
+
+        .alert li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-control-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            color: var(--text);
+            background-color: var(--light);
+            background-clip: padding-box;
+            border: 1px solid rgba(0,0,0,0.15);
+            border-radius: var(--radius);
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(208, 27, 32, 0.25);
+        }
+
+        .is-invalid {
+            border-color: #dc3545;
+        }
+
+        .invalid-feedback {
+            display: block;
+            width: 100%;
+            margin-top: 0.25rem;
+            font-size: 0.875rem;
+            color: #dc3545;
+        }
+
+        /* Button Styles */
+        .btn {
+            display: inline-block;
+            font-weight: 600;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            user-select: none;
+            border: 1px solid transparent;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: var(--radius);
+            transition: var(--transition);
+            cursor: pointer;
+            background-color: var(--primary);
+            color: var(--light);
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Code Styling */
+        code {
+            display: inline-block;
+            padding: 0.2rem 0.4rem;
+            font-size: 0.875rem;
+            color: #c7254e;
+            background-color: #f9f2f4;
+            border-radius: 4px;
+            margin: 0.25rem 0;
+            font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+        }
+
+        /* Layout */
+        .main-content {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .card-body {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card-body {
+                padding: 1rem;
+            }
+            
+            .card-title {
+                font-size: 1.5rem;
+            }
+            
+            .btn {
+                width: 100%;
+                padding: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% extends "base.html" %}
+
+    {% block content %}
+    <div class="container">
+        <div class="main-content">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title">Bulk Import Questions</h2>
+                    <p>Upload a CSV file with questions and options. Please ensure your file follows the specified format.</p>
+
+                    <div class="alert">
+                        <h5>CSV Format Instructions</h5>
+                        <p>Your CSV file must have a header row with the following columns:</p>
+                        <code>question_text, subject, topic, difficulty, explanation, option1_text, option1_is_correct, option2_text, option2_is_correct, ...</code>
+                        <hr>
+                        <ul>
+                            <li><strong>question_text, subject, topic, difficulty:</strong> These fields are required.</li>
+                            <li><strong>explanation:</strong> This field is optional.</li>
+                            <li><strong>optionN_text, optionN_is_correct:</strong> Provide at least 2 and up to 5 pairs of option columns (e.g., <code>option1_text</code> to <code>option5_text</code>).</li>
+                            <li>For <code>optionN_is_correct</code> columns, use <code>1</code> or <code>TRUE</code> for a correct answer, and <code>0</code>, <code>FALSE</code>, or leave it empty for an incorrect answer.</li>
+                        </ul>
+                    </div>
+
+                    <form method="POST" action="" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        <fieldset class="form-group">
+                            <div class="form-group">
+                                <label class="form-control-label" for="file">CSV File</label>
+                                {% if form.file.errors %}
+                                    <input type="file" class="form-control is-invalid" id="file" name="file" required>
+                                    <div class="invalid-feedback">
+                                        {% for error in form.file.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <input type="file" class="form-control" id="file" name="file" required>
+                                {% endif %}
+                            </div>
+                        </fieldset>
+                        <div class="form-group">
+                            <button type="submit" class="btn">Upload and Import</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+</body>
+</html>

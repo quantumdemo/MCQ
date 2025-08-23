@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    /* Dashboard Container */
+    .dashboard-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1.5rem;
+    }
+
+    /* Header */
+    .dashboard-header {
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-header h1 {
+        font-size: 2rem;
+    }
+
+    /* Content */
+    .dashboard-content {
+        background: var(--card-bg);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 1.5rem;
+    }
+
+    .exams-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .exams-header h2 {
+        font-size: 1.5rem;
+    }
+
+    /* Divider */
+    .divider {
+        height: 1px;
+        background-color: #eee;
+        margin: 1.5rem 0;
+    }
+
+    /* Exams List */
+    .exams-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .exam-card {
+        background: var(--card-bg);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 1.5rem;
+        border: 1px solid #eee;
+        transition: var(--transition);
+    }
+
+    .exam-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .exam-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+
+    .exam-header h3 {
+        font-size: 1.2rem;
+        margin-right: 1rem;
+    }
+
+    .exam-time {
+        font-size: 0.9rem;
+        white-space: nowrap;
+        padding: 0.25rem 0.5rem;
+        background: #f5f5f5;
+        border-radius: var(--radius);
+    }
+
+    .exam-details {
+        margin-bottom: 1.5rem;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    /* Buttons */
+    .practice-button, .start-button {
+        display: inline-block;
+        padding: 0.7rem 1.5rem;
+        border-radius: var(--radius);
+        font-weight: 600;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: var(--transition);
+        text-align: center;
+    }
+
+    .practice-button:hover, .start-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    }
+
+    .start-button {
+        width: 100%;
+        padding: 0.8rem;
+    }
+
+    /* No Exams Message */
+    .no-exams {
+        padding: 1.5rem;
+        border-radius: var(--radius);
+        text-align: center;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .dashboard-container {
+            padding: 1rem;
+        }
+        
+        .exams-list {
+            grid-template-columns: 1fr;
+        }
+        
+        .exam-header {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .exam-time {
+            align-self: flex-start;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .exams-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .dashboard-header h1 {
+            font-size: 1.5rem;
+        }
+        
+        .exams-header h2 {
+            font-size: 1.3rem;
+        }
+        
+        .practice-button {
+            width: 100%;
+        }
+    }
+</style>
+<section class="dashboard-container">
+    <div class="dashboard-header">
+        <h1 class="color1">Welcome, {{ current_user.username }}!</h1>
+    </div>
+
+    <div class="dashboard-content">
+        <div class="exams-header">
+            <h2 class="color13">Available Exams</h2>
+            {% if is_practice_enabled %}
+            <a href="{{ url_for('main.practice_dashboard') }}" class="practice-button color15-bg color9">Go to Practice Mode</a>
+            {% endif %}
+        </div>
+        
+        <div class="divider"></div>
+
+        {% if exams %}
+        <div class="exams-list">
+            {% for exam in exams %}
+            <div class="exam-card">
+                <div class="exam-header">
+                    <h3 class="color1">{{ exam.title }}</h3>
+                    <span class="exam-time color13">{{ exam.time_limit }} minutes</span>
+                </div>
+                
+                <div class="exam-details color13">
+                    <p>This exam contains {{ exam.questions|length }} questions.</p>
+                    <p>Passing score: {{ exam.passing_score }}%</p>
+                </div>
+                
+                <form action="{{ url_for('exam.start_exam', exam_id=exam.id) }}" method="POST">
+                    <button type="submit" class="start-button color1-bg color9">Start Exam</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-exams color13-bg color9">
+            <p>There are currently no exams available. Please check back later.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock content %}
