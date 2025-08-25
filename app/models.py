@@ -69,7 +69,7 @@ class Exam(db.Model):
     passing_score = db.Column(db.Integer, default=70)
     negative_marking = db.Column(db.Boolean, default=False)
     randomize_questions = db.Column(db.Boolean, default=True)
-    questions = db.relationship('Question', secondary=exam_questions, lazy='subquery',
+    questions = db.relationship('Question', secondary=exam_questions, lazy='joined',
                                 backref=db.backref('exams', lazy=True))
     results = db.relationship('Result', backref='exam', lazy=True, cascade="all, delete-orphan")
 
